@@ -27,7 +27,7 @@ RUN rm /etc/rhsm-host && \
 
 # Docs to add epel-release: https://docs.fedoraproject.org/en-US/epel/#_el7
     subscription-manager repos --enable rhel-*-optional-rpms --enable rhel-*-extras-rpms --enable rhel-ha-for-rhel-*-server-rpms && \
-    yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
+    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
     yum -y update && \
     yum -y install net-tools wget curl tar unzip mlocate logrotate strace telnet man vim rsyslog cron httpd mod_ssl dos2unix cronie supervisor && \
     rm -fr /var/cache/yum/* && yum clean all
