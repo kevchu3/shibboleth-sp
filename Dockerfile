@@ -15,7 +15,14 @@ LABEL Version=$version
 
 LABEL Build docker build --rm --tag $maintainer/$imagename .
 
-RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime && \
+USER root
+# Copy subscription manager configurations
+COPY ./rhsm-conf /etc/rhsm
+COPY ./rhsm-ca /etc/rhsm/ca
+# Delete /etc/rhsm-host to use entitlements from the build container
+RUN rm /etc/rhsm-host && \
+
+    ln -sf /usr/share/zoneinfo/UTC /etc/localtime && \
     echo "NETWORKING=yes" > /etc/sysconfig/network && \
 
 # Docs to add epel-release: https://docs.fedoraproject.org/en-US/epel/#_el7
@@ -74,7 +81,7 @@ EXPOSE 80 443
 
 HEALTHCHECK --interval=1m --timeout=30s \
   CMD curl -k -f https://127.0.0.1/Shibboleth.sso/Status || exit 1
-
+USER 1001
 
 CMD ["/usr/local/bin/startup.sh"]
 
