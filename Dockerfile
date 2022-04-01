@@ -1,4 +1,4 @@
-FROM image-registry.openshift-image-registry.svc:5000/nyu-base-images/ubi7:latest
+FROM ubi7:latest
 
 # Define args and set a default value
 ARG maintainer=tier
