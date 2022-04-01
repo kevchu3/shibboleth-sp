@@ -1,4 +1,4 @@
-FROM centos:centos7
+FROM image-registry.openshift-image-registry.svc:5000/nyu-base-images/ubi7:latest
 
 # Define args and set a default value
 ARG maintainer=tier
@@ -15,12 +15,15 @@ LABEL Version=$version
 
 LABEL Build docker build --rm --tag $maintainer/$imagename .
 
-RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
-    && echo "NETWORKING=yes" > /etc/sysconfig/network
+RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime && \
+    echo "NETWORKING=yes" > /etc/sysconfig/network && \
 
-RUN rm -fr /var/cache/yum/* && yum clean all && yum -y install --setopt=tsflags=nodocs epel-release && yum -y update && \
+# Docs to add epel-release: https://docs.fedoraproject.org/en-US/epel/#_el7
+    subscription-manager repos --enable rhel-*-optional-rpms --enable rhel-*-extras-rpms --enable rhel-ha-for-rhel-*-server-rpms && \
+    yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
+    yum -y update && \
     yum -y install net-tools wget curl tar unzip mlocate logrotate strace telnet man vim rsyslog cron httpd mod_ssl dos2unix cronie supervisor && \
-    yum clean all
+    rm -fr /var/cache/yum/* && yum clean all
 
 #install shibboleth, cleanup httpd
 COPY container_files/shibboleth/shibboleth.repo /etc/yum.repos.d/security:shibboleth.repo
